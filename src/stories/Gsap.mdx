@@ -1,0 +1,204 @@
+import { Meta, Source } from "@storybook/addon-docs/blocks";
+
+import { GsapStaggerDemo } from "./gsap/GsapStaggerDemo";
+import { GsapHoverCard } from "./gsap/GsapHoverCard";
+import { GsapScrollReveal } from "./gsap/GsapScrollReveal";
+import { GsapPulseLoop } from "./gsap/GsapPulseLoop";
+import { GsapSequencedTimeline } from "./gsap/GsapSequencedTimeline";
+
+<Meta title="Foundations/GSAP" />
+
+# GSAP
+
+[GSAP](https://gsap.com) (GreenSock Animation Platform) es la librería que usamos en **livo** para animaciones
+de UI: transiciones de entrada, timelines complejos, scroll, drag, etc. Es agnóstica de framework, así que en
+React la integramos con el hook oficial `useGSAP` de `@gsap/react`, que se encarga de la limpieza automática
+(`gsap.context().revert()`) al desmontar o re-renderizar componentes.
+
+## Instalación
+
+Ya está instalado en el proyecto:
+
+<Source
+  language="bash"
+  code={`npm install gsap @gsap/react`}
+/>
+
+## Uso básico con `useGSAP`
+
+Registra el hook como plugin una sola vez (normalmente junto a tus imports) y usa `scope` para poder animar
+por selector de clase sin crear un `ref` por elemento.
+
+<Source
+  language="jsx"
+  code={`import { useRef } from 'react';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(useGSAP);
+
+function Ejemplo() {
+  const container = useRef(null);
+
+  useGSAP(() => {
+    gsap.from('.caja', {
+      opacity: 0,
+      y: 24,
+      stagger: 0.12,
+      duration: 0.6,
+      ease: 'power3.out',
+    });
+  }, { scope: container }); // limpieza automática al desmontar
+
+  return (
+    <div ref={container}>
+      <div className="caja">1</div>
+      <div className="caja">2</div>
+    </div>
+  );
+}`}
+/>
+
+### Ejemplo en vivo: entrada con stagger
+
+<div style={{ padding: '16px 0' }}>
+  <GsapStaggerDemo />
+</div>
+
+## Event handlers: `contextSafe`
+
+Cualquier animación creada **después** de que `useGSAP` corrió (por ejemplo dentro de un `onClick`) debe
+envolverse con `contextSafe()` para que también se limpie correctamente con el resto del contexto.
+
+<Source
+  language="jsx"
+  code={`const { contextSafe } = useGSAP(() => {
+  // animación inicial...
+}, { scope: container });
+
+const replay = contextSafe(() => {
+  gsap.from('.caja', { opacity: 0, y: 24, stagger: 0.12 });
+});`}
+/>
+
+## Timelines controlados (hover)
+
+Un patrón muy común: crear un `gsap.timeline({ paused: true })` dentro de `useGSAP` y controlarlo con
+`.play()` / `.reverse()` desde los event handlers del DOM.
+
+<Source
+  language="jsx"
+  code={`useGSAP(() => {
+  tlRef.current = gsap
+    .timeline({ paused: true })
+    .to(cardRef.current, { scale: 1.05, rotate: -2, duration: 0.3 });
+}, { scope: container });
+
+<div
+  ref={cardRef}
+  onMouseEnter={() => tlRef.current.play()}
+  onMouseLeave={() => tlRef.current.reverse()}
+/>`}
+/>
+
+### Ejemplo en vivo: timeline en hover
+
+<div style={{ padding: '16px 0' }}>
+  <GsapHoverCard />
+</div>
+
+## Animaciones controladas por scroll (`ScrollTrigger`)
+
+`ScrollTrigger` dispara o revierte una animación según la posición de scroll. Si el contenedor no es la
+ventana (por ejemplo un panel con `overflow-y: auto`), pásale `scroller` apuntando a ese elemento.
+
+<Source
+  language="jsx"
+  code={`import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+useGSAP(() => {
+  gsap.utils.toArray('.tarjeta').forEach((card) => {
+    gsap.from(card, {
+      opacity: 0,
+      y: 40,
+      scrollTrigger: {
+        trigger: card,
+        scroller: scrollerRef.current, // omitir si es la ventana
+        start: 'top 90%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+  });
+}, { scope: scrollerRef });`}
+/>
+
+### Ejemplo en vivo: revelado al hacer scroll
+
+<div style={{ padding: '16px 0' }}>
+  <GsapScrollReveal />
+</div>
+
+## Loops infinitos (`repeat`, `yoyo`, `stagger.repeat`)
+
+Para indicadores de carga o pulsos continuos, usa `repeat: -1` (infinito) y `yoyo: true` para que la
+animación vaya y regrese. `stagger` también acepta `repeat` propio para desfasar el loop entre elementos.
+
+<Source
+  language="jsx"
+  code={`gsap.to('.punto', {
+  scale: 1.6,
+  opacity: 0.4,
+  duration: 0.9,
+  ease: 'sine.inOut',
+  repeat: -1,
+  yoyo: true,
+  stagger: { each: 0.2, repeat: -1 },
+});`}
+/>
+
+### Ejemplo en vivo: loop con stagger
+
+<div style={{ padding: '16px 0' }}>
+  <GsapPulseLoop />
+</div>
+
+## Timeline con varios pasos en paralelo
+
+Un `timeline` te deja encadenar tweens en secuencia y, con la **position parameter** (el `0` al final de
+`.to(...)`), superponer animaciones para que corran en paralelo con otras del timeline.
+
+<Source
+  language="jsx"
+  code={`const tl = gsap.timeline({ paused: true });
+
+tl.to('.barra-relleno', { width: '100%', duration: 1.4, ease: 'power1.inOut' })
+  .to('.paso', { opacity: 1, stagger: 0.35 }, 0) // el "0" lo corre en paralelo desde el inicio
+  .fromTo('.check', { scale: 0 }, { scale: 1, ease: 'back.out(3)' });
+
+tl.restart(); // desde un botón, wrappéalo con contextSafe`}
+/>
+
+### Ejemplo en vivo: timeline de progreso con pasos
+
+<div style={{ padding: '16px 0' }}>
+  <GsapSequencedTimeline />
+</div>
+
+## Buenas prácticas
+
+- **Siempre usa `useGSAP`** en vez de `useEffect`/`useLayoutEffect` a mano: te da limpieza automática y es
+  seguro para *StrictMode* (no duplica animaciones en desarrollo).
+- **Define `scope`** cuando animes por clase/selector, así evitas que un componente afecte elementos de otro.
+- **`contextSafe`** para todo lo que se dispare fuera del cuerpo del hook (clicks, timeouts, listeners).
+- Para plugins adicionales (`ScrollTrigger`, `Draggable`, `Flip`, etc.) regístralos junto a `useGSAP`:
+  `gsap.registerPlugin(useGSAP, ScrollTrigger)`.
+- Evita animar propiedades que rompan el layout (`width`/`height`) cuando puedas usar `scale`/`transform` —
+  son más baratas para el navegador.
+
+## Recursos
+
+- [Documentación oficial de GSAP](https://gsap.com/docs/v3/)
+- [Guía de integración con React (`useGSAP`)](https://gsap.com/resources/React)
+- [Ease Visualizer](https://gsap.com/docs/v3/Eases) — para elegir curvas de animación.

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+storybook-static/
+
+# Editor / OS
+.DS_Store
+*.local
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Leftover source files already copied into src/assets — not needed in the repo
+/Fondo01.jpg
+/Fondo02.jpg
+/Logo_livo.png

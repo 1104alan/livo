@@ -1,0 +1,72 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Figma" />
+
+# Figma
+
+Este es el **archivo de diseño fuente de la UI de livo**: las pantallas y componentes que sirven de
+referencia visual para lo que se construye en código (y que luego se documenta aquí, en Storybook).
+
+> El archivo es privado. El embed de abajo solo carga contenido si ya tienes sesión iniciada en Figma con
+> acceso al archivo — si ves una pantalla de login, entra con tu cuenta o pide acceso a quien lo comparta.
+
+<div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+  <a
+    href="https://www.figma.com/design/mmk89HD1XZ3wiagQo6t9dy/Proyectos?node-id=216-19500&t=HzLvKgRZgc7vdPfR-1"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 8,
+      padding: '8px 14px',
+      borderRadius: 8,
+      background: 'var(--primary)',
+      color: 'var(--primary-foreground)',
+      fontWeight: 600,
+      fontSize: 14,
+      textDecoration: 'none',
+    }}
+  >
+    Abrir en Figma ↗
+  </a>
+  <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
+    node-id: 216-19500
+  </span>
+</div>
+
+<div
+  style={{
+    position: 'relative',
+    width: '100%',
+    paddingBottom: '62%',
+    borderRadius: 'var(--radius-lg)',
+    overflow: 'hidden',
+    border: '1px solid var(--border)',
+  }}
+>
+  <iframe
+    title="Diseño de livo en Figma"
+    src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2Fmmk89HD1XZ3wiagQo6t9dy%2FProyectos%3Fnode-id%3D216-19500%26t%3DHzLvKgRZgc7vdPfR-1"
+    allowFullScreen
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      border: 'none',
+    }}
+  />
+</div>
+
+## Cómo usar esta página
+
+- **Referencia visual**: antes de construir o modificar un componente en [`src/components/ui`](../components/ui),
+  revisa el frame correspondiente en Figma para mantener consistencia con el diseño aprobado.
+- **Fuente de la verdad de tokens**: los valores de color, espaciado y tipografía definidos en
+  [`src/index.css`](../index.css) deberían reflejar lo que está en este archivo. Si notas una diferencia,
+  repórtala para actualizar uno de los dos lados.
+- **Enlace directo al nodo**: la URL de arriba apunta al frame específico (`node-id=216-19500`); si necesitas
+  referenciar otro frame, copia su enlace desde Figma (clic derecho → *Copy link to selection*) y actualízalo
+  aquí.
