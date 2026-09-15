@@ -23,3 +23,5 @@ npm-debug.log*
 /Fondo01.jpg
 /Fondo02.jpg
 /Logo_livo.png
+.vercel
+.env*
