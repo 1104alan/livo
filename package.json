@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -54,6 +55,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/browser-playwright": "latest",
     "@vitest/coverage-v8": "latest",
+    "chromatic": "^18.9.0",
     "oxlint": "^1.81.0",
     "playwright": "latest",
     "prop-types": "latest",
